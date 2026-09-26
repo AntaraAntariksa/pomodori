@@ -3,26 +3,15 @@
 // =========================
 const timerDisplay = document.getElementById("timer");
 const modeDisplay = document.getElementById("mode");
-
 const startButton = document.getElementById("startButton");
 const resetButton = document.getElementById("resetButton");
-
 const focusInput = document.getElementById("focusInput");
 const breakInput = document.getElementById("breakInput");
 const sessionInput = document.getElementById("sessionInput");
+const sessionNumberDisplay = document.getElementById("sessionNumber");
+const totalSessionsDisplay = document.getElementById("totalSessions");
+const dotsContainer = document.getElementById("dots");
 
-const sessionNumberDisplay =
-    document.getElementById("sessionNumber");
-
-const totalSessionsDisplay =
-    document.getElementById("totalSessions");
-
-const dotsContainer =
-    document.getElementById("dots");
-
-// =========================
-// TIMER VARIABLES
-// =========================
 let timerInterval = null;
 let isRunning = false;
 let mode = "focus";
@@ -31,41 +20,26 @@ let totalSessions = 4;
 let remainingSeconds = 25 * 60;
 
 // =========================
-// DISPLAY TIMER
+// DISPLAY
 // =========================
 function updateTimerDisplay() {
-    const minutes =
-        Math.floor(remainingSeconds / 60);
-
-    const seconds =
-        remainingSeconds % 60;
-
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
     timerDisplay.textContent =
         `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-// =========================
-// UPDATE SESSION DISPLAY
-// =========================
 function updateSessionDisplay() {
-    sessionNumberDisplay.textContent =
-        currentSession;
-
-    totalSessionsDisplay.textContent =
-        totalSessions;
-
+    sessionNumberDisplay.textContent = currentSession;
+    totalSessionsDisplay.textContent = totalSessions;
     updateDots();
 }
 
-// =========================
-// CREATE SESSION DOTS
-// =========================
 function updateDots() {
     dotsContainer.innerHTML = "";
-    for (let i = 1; i <= totalSessions; i++) {
-        const dot =
-            document.createElement("div");
 
+    for (let i = 1; i <= totalSessions; i++) {
+        const dot = document.createElement("div");
         dot.classList.add("dot");
 
         if (i <= currentSession) {
@@ -77,76 +51,114 @@ function updateDots() {
 }
 
 // =========================
+// SOUND
+// =========================
+let audioContext = null;
+
+function playTimerSound() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+
+    gainNode.gain.setValueAtTime(0.001, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+        0.25,
+        audioContext.currentTime + 0.02
+    );
+    gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.6
+    );
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.6);
+}
+
+// =========================
 // START TIMER
 // =========================
 function startTimer() {
+    if (isRunning) return;
 
-    if (isRunning) {
-        return;
-    }
     isRunning = true;
     startButton.textContent = "PAUSE";
+
+    // Aktifkan audio setelah user menekan START
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
     timerInterval = setInterval(() => {
         remainingSeconds--;
-        updateTimerDisplay();
+
         if (remainingSeconds <= 0) {
+            remainingSeconds = 0;
+            updateTimerDisplay();
+
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+
             playTimerSound();
             switchMode();
-
+            return;
         }
+
+        updateTimerDisplay();
     }, 1000);
 }
 
 // =========================
-// PAUSE TIMER
+// PAUSE
 // =========================
 function pauseTimer() {
     clearInterval(timerInterval);
+    timerInterval = null;
     isRunning = false;
     startButton.textContent = "START";
 }
 
 // =========================
-// SWITCH FOCUS / BREAK
+// SWITCH MODE
 // =========================
 function switchMode() {
-    clearInterval(timerInterval);
-    isRunning = false;
-
-    // =====================
-    // FOCUS → BREAK
-    // =====================
     if (mode === "focus") {
-        // Kalau masih ada sesi berikutnya,
-        // masuk break.
         if (currentSession < totalSessions) {
             mode = "break";
-            remainingSeconds =
-                Number(breakInput.value) * 60;
+            remainingSeconds = Number(breakInput.value) * 60;
             modeDisplay.textContent = "BREAK";
         } else {
-            // Semua sesi sudah selesai
             finishTimer();
             return;
         }
-    }
-
-    // =====================
-    // BREAK → NEXT FOCUS
-    // =====================
-    else {
+    } else {
         currentSession++;
         mode = "focus";
-        remainingSeconds =
-            Number(focusInput.value) * 60;
-
+        remainingSeconds = Number(focusInput.value) * 60;
         modeDisplay.textContent = "FOCUS";
         updateSessionDisplay();
     }
 
     updateTimerDisplay();
-    startButton.textContent = "START";
-    // otomatis lanjut
+
+    // Otomatis lanjut ke mode berikutnya
     startTimer();
 }
 
@@ -155,7 +167,9 @@ function switchMode() {
 // =========================
 function finishTimer() {
     clearInterval(timerInterval);
+    timerInterval = null;
     isRunning = false;
+
     modeDisplay.textContent = "DONE";
     timerDisplay.textContent = "00:00";
     startButton.textContent = "START";
@@ -166,15 +180,17 @@ function finishTimer() {
 // =========================
 function resetTimer() {
     clearInterval(timerInterval);
+    timerInterval = null;
     isRunning = false;
+
     mode = "focus";
     currentSession = 1;
-    totalSessions =
-        Number(sessionInput.value);
-    remainingSeconds =
-        Number(focusInput.value) * 60;
+    totalSessions = Number(sessionInput.value);
+    remainingSeconds = Number(focusInput.value) * 60;
+
     modeDisplay.textContent = "FOCUS";
     startButton.textContent = "START";
+
     updateTimerDisplay();
     updateSessionDisplay();
 }
@@ -190,33 +206,27 @@ startButton.addEventListener("click", () => {
     }
 });
 
-resetButton.addEventListener("click", () => {
-    resetTimer();
-});
+resetButton.addEventListener("click", resetTimer);
 
 // =========================
 // SETTINGS
 // =========================
 focusInput.addEventListener("change", () => {
     if (!isRunning && mode === "focus") {
-        remainingSeconds =
-            Number(focusInput.value) * 60;
+        remainingSeconds = Number(focusInput.value) * 60;
         updateTimerDisplay();
     }
 });
 
 breakInput.addEventListener("change", () => {
-    // Kalau sedang break dan timer belum berjalan, update durasi break.
     if (!isRunning && mode === "break") {
-        remainingSeconds =
-            Number(breakInput.value) * 60;
+        remainingSeconds = Number(breakInput.value) * 60;
         updateTimerDisplay();
     }
 });
 
 sessionInput.addEventListener("change", () => {
-    totalSessions =
-        Number(sessionInput.value);
+    totalSessions = Number(sessionInput.value);
     updateSessionDisplay();
 });
 
@@ -229,159 +239,94 @@ updateSessionDisplay();
 // =========================
 // CUSTOM BACKGROUND
 // =========================
-const customizeButton =
-    document.getElementById("customizeButton");
-const customizePanel =
-    document.getElementById("customizePanel");
-const backgroundInput =
-    document.getElementById("backgroundInput");
-const overlayInput =
-    document.getElementById("overlayInput");
-const removeBackgroundButton =
-    document.getElementById("removeBackgroundButton");
-const background =
-    document.getElementById("background");
-const overlay =
-    document.getElementById("overlay");
+const customizeButton = document.getElementById("customizeButton");
+const customizePanel = document.getElementById("customizePanel");
+const backgroundInput = document.getElementById("backgroundInput");
+const overlayInput = document.getElementById("overlayInput");
+const removeBackgroundButton = document.getElementById("removeBackgroundButton");
+const background = document.getElementById("background");
+const overlay = document.getElementById("overlay");
 
-// =========================
-// OPEN / CLOSE CUSTOMIZE
-// =========================
 customizeButton.addEventListener("click", () => {
     customizePanel.classList.toggle("open");
 });
 
-// =========================
-// CHANGE BACKGROUND
-// =========================
 backgroundInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
-    if (!file) {
-        return;
-    }
+    if (!file) return;
+
     const reader = new FileReader();
 
     reader.onload = function () {
         const imageURL = reader.result;
-        background.style.backgroundImage =
-            `url("${imageURL}")`;
-        // Save background
-        localStorage.setItem(
-            "pomodoriBackground",
-            imageURL
-        );
+        background.style.backgroundImage = `url("${imageURL}")`;
+        localStorage.setItem("pomodoriBackground", imageURL);
     };
+
     reader.readAsDataURL(file);
 });
 
-// =========================
-// CHANGE OVERLAY
-// =========================
 overlayInput.addEventListener("input", () => {
-    const opacity =
-        overlayInput.value;
-    overlay.style.background =
-        `rgba(0, 0, 0, ${opacity})`;
-    localStorage.setItem(
-        "pomodoriOverlay",
-        opacity
-    );
+    const opacity = overlayInput.value;
+
+    overlay.style.background = `rgba(0, 0, 0, ${opacity})`;
+    localStorage.setItem("pomodoriOverlay", opacity);
 });
 
-// =========================
-// REMOVE BACKGROUND
-// =========================
 removeBackgroundButton.addEventListener("click", () => {
     background.style.backgroundImage = "none";
-    localStorage.removeItem(
-        "pomodoriBackground"
-    );
+    localStorage.removeItem("pomodoriBackground");
 });
 
-// =========================
-// LOAD SAVED BACKGROUND
-// =========================
-const savedBackground =
-    localStorage.getItem(
-        "pomodoriBackground"
-    );
+const savedBackground = localStorage.getItem("pomodoriBackground");
+
 if (savedBackground) {
-    background.style.backgroundImage =
-        `url("${savedBackground}")`;
+    background.style.backgroundImage = `url("${savedBackground}")`;
 }
 
-// =========================
-// LOAD SAVED OVERLAY
-// =========================
-const savedOverlay =
-    localStorage.getItem(
-        "pomodoriOverlay"
-    );
+const savedOverlay = localStorage.getItem("pomodoriOverlay");
 
 if (savedOverlay !== null) {
-    overlayInput.value =
-        savedOverlay;
-
-    overlay.style.background =
-        `rgba(0, 0, 0, ${savedOverlay})`;
+    overlayInput.value = savedOverlay;
+    overlay.style.background = `rgba(0, 0, 0, ${savedOverlay})`;
 }
 
 // =========================
 // THEME PICKER
 // =========================
-const themeOptions =
-    document.querySelectorAll(".theme-option");
+const themeOptions = document.querySelectorAll(".theme-option");
 
-// =========================
-// APPLY THEME
-// =========================
 function applyTheme(theme) {
-    // Remove previous themes
     document.body.classList.remove(
         "theme-cozy",
         "theme-cute",
         "theme-glass",
         "theme-clean"
     );
-    // Add selected theme
-    document.body.classList.add(
-        `theme-${theme}`
-    );
-    // Update active button
+
+    document.body.classList.add(`theme-${theme}`);
+
     themeOptions.forEach((button) => {
         button.classList.remove("active");
+
         if (button.dataset.theme === theme) {
             button.classList.add("active");
         }
     });
-    // Save theme
-    localStorage.setItem(
-        "pomodoriTheme",
-        theme
-    );
+
+    localStorage.setItem("pomodoriTheme", theme);
 }
 
-// =========================
-// THEME BUTTON EVENTS
-// =========================
 themeOptions.forEach((button) => {
     button.addEventListener("click", () => {
-        const selectedTheme =
-            button.dataset.theme;
-        applyTheme(selectedTheme);
+        applyTheme(button.dataset.theme);
     });
 });
 
-// =========================
-// LOAD SAVED THEME
-// =========================
-const savedTheme =
-    localStorage.getItem(
-        "pomodoriTheme"
-    );
+const savedTheme = localStorage.getItem("pomodoriTheme");
+
 if (savedTheme) {
     applyTheme(savedTheme);
 } else {
-    // Default theme
     applyTheme("cozy");
 }
