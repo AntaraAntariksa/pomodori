@@ -1,0 +1,520 @@
+/* =========================
+   RESET
+   ========================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================
+   THEME VARIABLES
+   ========================= */
+:root {
+    --background-color: #f4efe7;
+    --text-color: #3d3832;
+    --card-background: rgba(255, 255, 255, 0.75);
+    --secondary-background: rgba(255, 255, 255, 0.6);
+    --button-background: #3d3832;
+    --button-text: #ffffff;
+    --secondary-button: #ddd6cd;
+    --accent-color: #8b6f47;
+    --border-radius: 20px;
+    --shadow:
+        0 10px 30px rgba(0, 0, 0, 0.08);
+    --blur: 0px;
+}
+
+/* =========================
+   COZY STUDY
+   ========================= */
+body.theme-cozy {
+    --background-color: #eee4d5;
+    --text-color: #4a4036;
+    --card-background: rgba(255, 250, 242, 0.82);
+    --secondary-background: rgba(255, 250, 242, 0.68);
+    --button-background: #59483a;
+    --button-text: #fffaf2;
+    --secondary-button: #d8c9b8;
+    --accent-color: #9b7653;
+    --border-radius: 20px;
+    --shadow:
+        0 12px 30px rgba(77, 55, 35, 0.12);
+    --blur: 0px;
+}
+
+/* =========================
+   CUTE MINIMAL
+   ========================= */
+body.theme-cute {
+    --background-color: #fff3f5;
+    --text-color: #55434a;
+    --card-background: rgba(255, 255, 255, 0.88);
+    --secondary-background: rgba(255, 255, 255, 0.72);
+    --button-background: #e99aaa;
+    --button-text: white;
+    --secondary-button: #f4d6dc;
+    --accent-color: #e99aaa;
+    --border-radius: 28px;
+    --shadow:
+        0 10px 30px rgba(210, 120, 145, 0.15);
+    --blur: 0px;
+}
+
+/* =========================
+   GLASSMORPHISM
+   ========================= */
+body.theme-glass {
+    --background-color: #d9e1e5;
+    --text-color: #ffffff;
+    --card-background: rgba(255, 255, 255, 0.18);
+    --secondary-background: rgba(255, 255, 255, 0.14);
+    --button-background: rgba(255, 255, 255, 0.25);
+    --button-text: white;
+    --secondary-button: rgba(255, 255, 255, 0.18);
+    --accent-color: white;
+    --border-radius: 24px;
+    --shadow:
+        0 8px 32px rgba(0, 0, 0, 0.18);
+    --blur: 18px;
+}
+
+/* =========================
+   CLEAN PRODUCTIVITY
+   ========================= */
+body.theme-clean {
+    --background-color: #f7f7f7;
+    --text-color: #252525;
+    --card-background: rgba(255, 255, 255, 0.95);
+    --secondary-background: rgba(255, 255, 255, 0.85);
+    --button-background: #252525;
+    --button-text: white;
+    --secondary-button: #e5e5e5;
+    --accent-color: #555555;
+    --border-radius: 12px;
+    --shadow:
+        0 4px 18px rgba(0, 0, 0, 0.07);
+    --blur: 0px;
+}
+
+/* =========================
+   BODY
+   ========================= */
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+    font-family:
+        Arial,
+        sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+/* =========================
+   BACKGROUND IMAGE
+   ========================= */
+#background {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition:
+        background-image 0.3s ease;
+}
+
+/* =========================
+   OVERLAY
+   ========================= */
+#overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+/* =========================
+   APP
+   ========================= */
+.app {
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* =========================
+   LOGO
+   ========================= */
+.logo {
+    margin-bottom: 30px;
+    font-size: 32px;
+    letter-spacing: 5px;
+    transition:
+        color 0.3s ease;
+}
+
+/* =========================
+   TIMER CARD
+   ========================= */
+.timer-card {
+    padding: 45px 30px;
+    background:
+        var(--card-background);
+    border-radius:
+        var(--border-radius);
+    box-shadow:
+        var(--shadow);
+    backdrop-filter:
+        blur(var(--blur));
+    -webkit-backdrop-filter:
+        blur(var(--blur));
+    transition:
+        all 0.3s ease;
+}
+
+/* =========================
+   MODE
+   ========================= */
+#mode {
+    margin-bottom: 15px;
+    font-size: 14px;
+    letter-spacing: 3px;
+}
+
+/* =========================
+   TIMER
+   ========================= */
+#timer {
+    margin-bottom: 30px;
+    font-size: 72px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+/* =========================
+   BUTTONS
+   ========================= */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+button {
+    padding: 12px 25px;
+    border: none;
+    border-radius:
+        var(--border-radius);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition:
+        all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+#startButton {
+    background:
+        var(--button-background);
+    color:
+        var(--button-text);
+}
+
+#resetButton {
+    background:
+        var(--secondary-button);
+    color:
+        var(--text-color);
+}
+
+/* =========================
+   SETTINGS
+   ========================= */
+.settings {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 18px;
+    background:
+        var(--secondary-background);
+    border-radius:
+        var(--border-radius);
+    box-shadow:
+        var(--shadow);
+    backdrop-filter:
+        blur(var(--blur));
+    -webkit-backdrop-filter:
+        blur(var(--blur));
+}
+
+.setting {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.setting label {
+    font-size: 14px;
+}
+
+input[type="number"] {
+    width: 55px;
+    padding: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* =========================
+   PROGRESS
+   ========================= */
+.progress {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+#dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background:
+        rgba(128, 128, 128, 0.35);
+    transition:
+        all 0.2s ease;
+}
+
+.dot.active {
+    background:
+        var(--accent-color);
+}
+
+/* =========================
+   CUSTOMIZE BUTTON
+   ========================= */
+.customize-button {
+    margin-top: 20px;
+    width: 100%;
+    background:
+        var(--secondary-background);
+    color:
+        var(--text-color);
+    box-shadow:
+        var(--shadow);
+    backdrop-filter:
+        blur(var(--blur));
+    -webkit-backdrop-filter:
+        blur(var(--blur));
+}
+
+/* =========================
+   CUSTOMIZE PANEL
+   ========================= */
+.customize-panel {
+    display: none;
+    margin-top: 15px;
+    padding: 22px;
+    background:
+        var(--card-background);
+    border-radius:
+        var(--border-radius);
+    box-shadow:
+        var(--shadow);
+    backdrop-filter:
+        blur(var(--blur));
+    -webkit-backdrop-filter:
+        blur(var(--blur));
+    text-align: left;
+}
+
+.customize-panel.open {
+    display: block;
+}
+
+.customize-panel h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.customize-section {
+    margin-bottom: 20px;
+}
+
+.customize-panel label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* =========================
+   THEME PICKER
+   ========================= */
+.theme-picker {
+    display: grid;
+    grid-template-columns:
+        1fr 1fr;
+    gap: 10px;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    background:
+        rgba(255, 255, 255, 0.45);
+    color:
+        var(--text-color);
+    border:
+        2px solid transparent;
+    border-radius: 14px;
+    text-align: left;
+}
+
+.theme-option:hover {
+    transform: none;
+    background:
+        rgba(255, 255, 255, 0.65);
+}
+
+.theme-option.active {
+    border-color:
+        var(--accent-color);
+}
+
+/* =========================
+   THEME PREVIEWS
+   ========================= */
+.theme-preview {
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+    border-radius: 10px;
+}
+
+.cozy-preview {
+    background:
+        linear-gradient(
+            135deg,
+            #eee4d5,
+            #9b7653
+        );
+}
+
+.cute-preview {
+    background:
+        linear-gradient(
+            135deg,
+            #fff3f5,
+            #e99aaa
+        );
+}
+
+.glass-preview {
+    background:
+        linear-gradient(
+            135deg,
+            #b8c8d0,
+            #657b87
+        );
+}
+
+.clean-preview {
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #252525
+        );
+}
+
+/* =========================
+   FILE INPUT
+   ========================= */
+input[type="file"] {
+    width: 100%;
+    font-size: 12px;
+}
+
+/* =========================
+   RANGE
+   ========================= */
+input[type="range"] {
+    width: 100%;
+}
+
+/* =========================
+   REMOVE BACKGROUND
+   ========================= */
+#removeBackgroundButton {
+    width: 100%;
+    background:
+        var(--secondary-button);
+    color:
+        var(--text-color);
+}
+
+/* =========================
+   GLASS SPECIAL EFFECT
+   ========================= */
+body.theme-glass .timer-card,
+body.theme-glass .settings,
+body.theme-glass .customize-panel,
+body.theme-glass .customize-button {
+    border:
+        1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+@media (max-width: 500px) {
+    #timer {
+        font-size: 58px;
+    }
+
+    .settings {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .setting {
+        justify-content: space-between;
+    }
+
+    .theme-picker {
+        grid-template-columns:
+            1fr;
+    }
+}
